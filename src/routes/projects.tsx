@@ -1,0 +1,75 @@
+import { useState } from 'react'
+import { createFileRoute } from '@tanstack/react-router'
+import projects, { type ProjectCategory } from '@/data/projects'
+import { PageHeader } from '@/components/PageHeader'
+import { ProjectCard } from '@/components/ProjectCard'
+import { CallToAction } from '@/components/CallToAction'
+import { useLang } from '@/i18n'
+
+export const Route = createFileRoute('/projects')({
+  head: () => ({ meta: [{ title: 'Projects — Curio Solutions' }] }),
+  component: ProjectsPage,
+})
+
+const filters: Array<'All' | ProjectCategory> = ['All', 'Automation', 'Website', 'Application']
+
+const filterLabels = {
+  All: { en: 'All', es: 'Todos' },
+  Automation: { en: 'Automation', es: 'Automatización' },
+  Website: { en: 'Websites', es: 'Sitios web' },
+  Application: { en: 'Applications', es: 'Aplicaciones' },
+} as const
+
+function ProjectsPage() {
+  const [filter, setFilter] = useState<(typeof filters)[number]>('All')
+  const visible = filter === 'All' ? projects : projects.filter((p) => p.category === filter)
+  const { t, pick } = useLang()
+
+  return (
+    <>
+      <PageHeader
+        eyebrow={t('Our work', 'Nuestro trabajo')}
+        title={
+          <>
+            {t('Projects we’re', 'Proyectos que')}{' '}
+            <span className="text-brand">{t('proud of', 'nos enorgullecen')}</span>
+          </>
+        }
+        intro={t(
+          'A selection of automations, websites, and applications we’ve designed and built for our clients.',
+          'Una selección de automatizaciones, sitios web y aplicaciones que hemos diseñado y desarrollado para nuestros clientes.'
+        )}
+      />
+
+      <section className="mx-auto max-w-7xl px-5 py-16">
+        <div role="group" aria-label="Filter projects" className="flex flex-wrap justify-center gap-2">
+          {filters.map((f) => (
+            <button
+              key={f}
+              type="button"
+              aria-pressed={filter === f}
+              onClick={() => setFilter(f)}
+              className={`nav-btn border border-slate-200 ${filter === f ? 'active border-transparent' : ''}`}
+            >
+              {pick(filterLabels[f])}
+            </button>
+          ))}
+        </div>
+
+        {visible.length > 0 ? (
+          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {visible.map((p) => (
+              <ProjectCard key={p.id} project={p} />
+            ))}
+          </div>
+        ) : (
+          <p className="mt-16 text-center text-ink-soft">
+            {t('New projects in this category are coming soon.', 'Pronto habrá nuevos proyectos en esta categoría.')}
+          </p>
+        )}
+      </section>
+
+      <CallToAction />
+    </>
+  )
+}
