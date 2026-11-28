@@ -1,3 +1,4 @@
+{/*
 import { ArrowUpRight, CheckCircle2, AppWindow, MonitorSmartphone, Workflow } from 'lucide-react'
 import type { Project } from '@/data/projects'
 
