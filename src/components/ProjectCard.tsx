@@ -68,4 +68,4 @@ export function ProjectCard({ project }: { project: Project }) {
       </div>
     </article>
   )
-}
+}}
